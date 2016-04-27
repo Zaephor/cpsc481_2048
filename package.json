@@ -1,0 +1,21 @@
+{
+  "name": "cpsc481_2048",
+  "version": "0.0.1",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "Eric Donaldson",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.3.4",
+    "clear": "0.0.1",
+    "cli-table": "^0.3.1",
+    "colors": "^1.1.2",
+    "lodash": "^4.6.1",
+    "mongoose": "^4.4.11",
+    "request-promise": "^2.0.1",
+    "rootpath": "^0.1.2"
+  }
+}
