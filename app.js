@@ -37,7 +37,7 @@ var count = 0;
     count++;
 
     return Promise
-      .each(algorithms, function (item) {
+      .each([algorithms[Math.floor(Math.random() * (algorithms.length))]], function (item) {
 
         return client
           .start()
