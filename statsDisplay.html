@@ -1,0 +1,346 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <script type="text/javascript">
+    window.onload = function () {
+      var updateInterval = 1000; // 1second
+
+      // dataPoints
+      var logs = [];
+      var trees = [];
+      var games = [];
+      var maxTiles = [];
+      var longestSession = [];
+      var hits = {
+        alg: [],
+        db: [],
+        total: []
+      };
+
+      var charts = {
+        gamesChart: new CanvasJS.Chart("gamesChart", {
+          title: {
+            text: "Games played"
+          },
+          data: [
+            {
+              type: "stepLine",
+              xValueType: "dateTime",
+              dataPoints: games,
+              showInLegend: true,
+              name: "Games played"
+            }
+          ]
+        }),
+        longestSessionChart: new CanvasJS.Chart("longestSessionChart", {
+          title: {
+            text: "Longest Session"
+          },
+          data: [
+            {
+              type: "stepLine",
+              xValueType: "dateTime",
+              dataPoints: longestSession,
+              showInLegend: true,
+              name: "Turns"
+            }
+          ]
+        }),
+        hitsChart: new CanvasJS.Chart("hitsChart", {
+          title: {
+            text: "Decision Origins"
+          },
+          toolTip: {
+            shared: true,
+            contentFormatter: function(e){
+              var str = "";
+              for (var i = 0; i < e.entries.length; i++){
+                var  temp = e.entries[i].dataSeries.name + " <strong>"+  e.entries[i].dataPoint.y + "</strong> <br/>" ;
+                str = str.concat(temp);
+              }
+              return (str);
+            }
+          },
+          data: [
+            {
+              type: "line",
+              xValueType: "dateTime",
+              dataPoints: hits.total,
+              showInLegend: true,
+              name: "Decisions made"
+            },
+            {
+              type: "stackedArea",
+              xValueType: "dateTime",
+              dataPoints: hits.db,
+              showInLegend: true,
+              name: "DB Origin"
+            },
+            {
+              type: "stackedArea",
+              xValueType: "dateTime",
+              dataPoints: hits.alg,
+              showInLegend: true,
+              name: "Alg Origin"
+            }
+          ]
+        }),
+        turnsChart: new CanvasJS.Chart("turnsChart", {
+          title: {
+            text: "Turns Vs Normalized Entries"
+          },
+          toolTip: {
+            shared: true,
+            contentFormatter: function(e){
+              var str = "";
+              for (var i = 0; i < e.entries.length; i++){
+                var  temp = e.entries[i].dataSeries.name + " <strong>"+  e.entries[i].dataPoint.y + "</strong> <br/>" ;
+                str = str.concat(temp);
+              }
+              return (str);
+            }
+          },
+          data: [
+            {
+              type: "line",
+              xValueType: "dateTime",
+              dataPoints: logs,
+              showInLegend: true,
+              name: "Turns"
+            },
+            {
+              type: "line",
+              xValueType: "dateTime",
+              dataPoints: trees,
+              showInLegend: true,
+              name: "Normalized Entries"
+            }
+          ]
+        }),
+        tilesChart: new CanvasJS.Chart("tilesChart", {
+          title: {
+            text: "Tiles"
+          },
+          data: [
+            {
+              type: "stepLine",
+              xValueType: "dateTime",
+              dataPoints: maxTiles,
+              showInLegend: true,
+              name: "Max Tile Detected"
+            }
+          ]
+        }),
+        progressChart: new CanvasJS.Chart("progressChart", {
+          title: {
+            text: "Max Tile Progress"
+          },
+          toolTip: {
+            shared: true,
+            contentFormatter: function(e){
+              var str = "Turn "+ e.entries[0].index+"<br/>";
+              for (var i = 0; i < e.entries.length; i++){
+                var  temp = e.entries[i].dataSeries.name + " <strong>"+  e.entries[i].dataPoint.y + "</strong> <br/>" ;
+                str = str.concat(temp);
+              }
+              return (str);
+            }
+          },
+          data: []
+        }),
+        scoreProgressChart: new CanvasJS.Chart("scoreProgressChart", {
+          title: {
+            text: "Score Progress"
+          },
+          toolTip: {
+            shared: true,
+            contentFormatter: function(e){
+              var str = "Turn "+ e.entries[0].index+"<br/>";
+              for (var i = 0; i < e.entries.length; i++){
+                var  temp = e.entries[i].dataSeries.name + " <strong>"+  e.entries[i].dataPoint.y + "</strong> <br/>" ;
+                str = str.concat(temp);
+              }
+              return (str);
+            }
+          },
+          data: []
+        }),
+
+        decisionsTurnChart: new CanvasJS.Chart("decisionsTurnChart", {
+          title: {
+            text: "Decision Ratio per Turn"
+          },
+          toolTip: {
+            shared: true,
+            contentFormatter: function(e){
+              var str = "Turn "+ e.entries[0].index+"<br/>";
+              for (var i = 0; i < e.entries.length; i++){
+                var  temp = e.entries[i].dataSeries.name + " <strong>"+  e.entries[i].dataPoint.y + "</strong> <br/>" ;
+                str = str.concat(temp);
+              }
+              return (str);
+            }
+          },
+          data: []
+        })
+      };
+
+      var updateChart = function () {
+        $.getJSON("/data.json", function (results) {
+          $("#updatedTime")[0].innerHTML = results.time;
+          if (results.logs > 0) {
+            logs.push({
+              x: new Date(results.time).getTime(),
+              y: results.logs
+            });
+          }
+          if (results.trees > 0) {
+            trees.push({
+              x: new Date(results.time).getTime(),
+              y: results.trees
+            });
+          }
+          if (results.games > 0 && (games.length === 0 || results.games !== games[games.length - 1].y)) {
+            games.push({
+              x: new Date(results.time).getTime(),
+              y: results.games
+            });
+          }
+          if (results.longestSession > 0 && (longestSession.length === 0 || results.longestSession !== longestSession[longestSession.length - 1].y)) {
+            longestSession.push({
+              x: new Date(results.time).getTime(),
+              y: results.longestSession
+            });
+          }
+          if (results.maxTile > 0 && (maxTiles.length === 0 || results.maxTile !== maxTiles[maxTiles.length - 1].y)) {
+            maxTiles.push({
+              x: new Date(results.time).getTime(),
+              y: results.maxTile
+            });
+          }
+          if (results.hits > 0) {
+            hits.total.push({
+              x: new Date(results.time).getTime(),
+              y: results.hits
+            });
+            hits.db.push({
+              x: new Date(results.time).getTime(),
+              y: results.dbHits
+            });
+            hits.alg.push({
+              x: new Date(results.time).getTime(),
+              y: results.algHits
+            });
+          }
+          if (results.progress !== {}) {
+            var algs = Object.keys(results.progress);
+            if (Object.keys(results.progress).length > 0 && Object.keys(results.progress).length !== charts.progressChart.options.data.length) {
+              charts.progressChart.options.data = [];
+              for (var i = 0; i < algs.length; i++) {
+                var alg = algs[i];
+                charts.progressChart.options.data.push({
+                  type: "line",
+                  dataPoints: results.progress[alg],
+                  showInLegend: true,
+                  name: alg
+                });
+              }
+            }
+            if (Object.keys(results.progress).length === charts.progressChart.options.data.length) {
+              for (var i = 0; i < algs.length; i++) {
+                var alg = algs[i];
+                charts.progressChart.options.data[i].dataPoints = results.progress[alg];
+              }
+            }
+          }
+
+          if (results.scoreProgress !== {}) {
+            var algs = Object.keys(results.scoreProgress);
+            if (Object.keys(results.scoreProgress).length > 0 && Object.keys(results.scoreProgress).length !== charts.scoreProgressChart.options.data.length) {
+              charts.scoreProgressChart.options.data = [];
+              for (var i = 0; i < algs.length; i++) {
+                var alg = algs[i];
+                charts.scoreProgressChart.options.data.push({
+                  type: "line",
+                  dataPoints: results.scoreProgress[alg],
+                  showInLegend: true,
+                  name: alg
+                });
+              }
+            }
+            if (Object.keys(results.scoreProgress).length === charts.scoreProgressChart.options.data.length) {
+              for (var i = 0; i < algs.length; i++) {
+                var alg = algs[i];
+                charts.scoreProgressChart.options.data[i].dataPoints = results.scoreProgress[alg];
+              }
+            }
+          }
+
+          if (results.decisionRatios !== {}) {
+            var algs = Object.keys(results.decisionRatios);
+            if (Object.keys(results.decisionRatios).length > 0 && Object.keys(results.decisionRatios).length !== charts.decisionsTurnChart.options.data.length) {
+              charts.decisionsTurnChart.options.data = [];
+              for (var i = 0; i < algs.length; i++) {
+                var alg = algs[i];
+                charts.decisionsTurnChart.options.data.push({
+                  type: "stackedArea",
+                  dataPoints: results.decisionRatios[alg],
+                  showInLegend: true,
+                  name: alg
+                });
+              }
+            }
+            if (Object.keys(results.decisionRatios).length === charts.decisionsTurnChart.options.data.length) {
+              for (var i = 0; i < algs.length; i++) {
+                var alg = algs[i];
+                charts.decisionsTurnChart.options.data[i].dataPoints = results.decisionRatios[alg];
+              }
+            }
+          }
+
+        });
+
+        for (var i = 0; i < Object.keys(charts).length; i++) {
+          charts[Object.keys(charts)[i]].render();
+        }
+      };
+
+      // generates first set of dataPoints
+      updateChart();
+
+      // update chart after specified time.
+      setInterval(function () {
+        updateChart()
+      }, updateInterval);
+
+    }
+  </script>
+  <script type="text/javascript" src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
+  <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+          integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="updatedTime"></div>
+<div id="tilesChart" style="height: 300px; width:100%;">
+</div>
+<div id="longestSessionChart" style="height: 300px; width:100%;">
+</div>
+
+<div id="gamesChart" style="height: 300px; width:100%;">
+</div>
+<div id="scoreProgressChart" style="height: 300px; width:100%;">
+</div>
+<div id="progressChart" style="height: 300px; width:100%;">
+</div>
+
+<div id="turnsChart" style="height: 300px; width:100%;">
+</div>
+
+<div id="decisionsTurnChart" style="height: 300px; width:100%;">
+</div>
+
+<div id="hitsChart" style="height: 300px; width:100%;">
+</div>
+</body>
+</html>
