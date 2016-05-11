@@ -4,7 +4,7 @@
 <head>
   <script type="text/javascript">
     window.onload = function () {
-      var updateInterval = 1000; // 1second
+      var updateInterval = 10000; // 1second
 
       // dataPoints
       var logs = [];
@@ -235,7 +235,7 @@
           }
           if (results.progress !== {}) {
             var algs = Object.keys(results.progress);
-            if (Object.keys(results.progress).length > 0 && Object.keys(results.progress).length !== charts.progressChart.options.data.length) {
+            if (Object.keys(results.progress).length > 0 && Object.keys(results.progress).length >= charts.progressChart.options.data.length) {
               charts.progressChart.options.data = [];
               for (var i = 0; i < algs.length; i++) {
                 var alg = algs[i];
@@ -257,7 +257,7 @@
 
           if (results.scoreProgress !== {}) {
             var algs = Object.keys(results.scoreProgress);
-            if (Object.keys(results.scoreProgress).length > 0 && Object.keys(results.scoreProgress).length !== charts.scoreProgressChart.options.data.length) {
+            if (Object.keys(results.scoreProgress).length > 0 && Object.keys(results.scoreProgress).length >= charts.scoreProgressChart.options.data.length) {
               charts.scoreProgressChart.options.data = [];
               for (var i = 0; i < algs.length; i++) {
                 var alg = algs[i];
@@ -279,7 +279,7 @@
 
           if (results.decisionRatios !== {}) {
             var algs = Object.keys(results.decisionRatios);
-            if (Object.keys(results.decisionRatios).length > 0 && Object.keys(results.decisionRatios).length !== charts.decisionsTurnChart.options.data.length) {
+            if (Object.keys(results.decisionRatios).length > 0 && Object.keys(results.decisionRatios).length >= charts.decisionsTurnChart.options.data.length) {
               charts.decisionsTurnChart.options.data = [];
               for (var i = 0; i < algs.length; i++) {
                 var alg = algs[i];
@@ -322,25 +322,25 @@
 </head>
 <body>
 <div id="updatedTime"></div>
-<div id="tilesChart" style="height: 300px; width:100%;">
+<div id="tilesChart" style="height: 500px; width:100%;">
 </div>
-<div id="longestSessionChart" style="height: 300px; width:100%;">
-</div>
-
-<div id="gamesChart" style="height: 300px; width:100%;">
-</div>
-<div id="scoreProgressChart" style="height: 300px; width:100%;">
-</div>
-<div id="progressChart" style="height: 300px; width:100%;">
+<div id="longestSessionChart" style="height: 500px; width:100%;">
 </div>
 
-<div id="turnsChart" style="height: 300px; width:100%;">
+<div id="gamesChart" style="height: 500px; width:100%;">
+</div>
+<div id="scoreProgressChart" style="height: 500px; width:100%;">
+</div>
+<div id="progressChart" style="height: 500px; width:100%;">
 </div>
 
-<div id="decisionsTurnChart" style="height: 300px; width:100%;">
+<div id="turnsChart" style="height: 500px; width:100%;">
 </div>
 
-<div id="hitsChart" style="height: 300px; width:100%;">
+<div id="decisionsTurnChart" style="height: 500px; width:100%;">
+</div>
+
+<div id="hitsChart" style="height: 500px; width:100%;">
 </div>
 </body>
 </html>

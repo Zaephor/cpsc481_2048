@@ -35,9 +35,12 @@ var count = 0;
 (function repeat() {
   if (count < rerun) {
     count++;
-
+    var random = Math.floor(Math.random() * (algorithms.length));
+    var random2 = (random+1) % algorithms.length;
+    var random3 = (random+2) % algorithms.length;
     return Promise
-      .each([algorithms[Math.floor(Math.random() * (algorithms.length))]], function (item) {
+      .each([algorithms[random]], function (item) {
+      //.each([algorithms[random],algorithms[random2],algorithms[random3]], function (item) {
 
         return client
           .start()
